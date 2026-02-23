@@ -10,8 +10,9 @@
       theme: {
         extend: {
           colors: {
-            primary: '#FF69B4',
-            secondary: '#FFB6C1'
+            primary: '#e8a0bf',
+            accent: '#d4a574',
+            surface: '#161118'
           },
           borderRadius: {
             'none': '0px',
@@ -33,169 +34,274 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    .floating-hearts {
+    * { font-family: 'Montserrat', sans-serif; }
+
+    body {
+      background: #0a0a0c;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -30%; left: -10%;
+      width: 60%; height: 60%;
+      background: radial-gradient(circle, rgba(232,160,191,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -20%; right: -10%;
+      width: 50%; height: 50%;
+      background: radial-gradient(circle, rgba(212,165,116,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Sparkle particles */
+    .sparkles {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       pointer-events: none;
       z-index: 1;
     }
-
-    .heart {
+    .sparkle {
       position: absolute;
-      font-size: 1.5rem;
-      color: rgba(255, 182, 193, 0.6);
-      animation: float 6s ease-in-out infinite;
+      width: 3px; height: 3px;
+      background: #e8a0bf;
+      border-radius: 50%;
+      animation: twinkle var(--dur) ease-in-out infinite;
+      animation-delay: var(--delay);
+      opacity: 0;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0; transform: scale(0.5); }
+      50% { opacity: 1; transform: scale(1.2); }
     }
 
-    .heart:nth-child(odd) { animation-delay: -2s; }
-    .heart:nth-child(even) { animation-delay: -4s; }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-      10%, 90% { opacity: 1; }
-      50% { transform: translateY(-10vh) rotate(180deg); }
+    /* Animated gradient border card */
+    .card {
+      position: relative;
+      background: #161118;
+      border-radius: 24px;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      padding: 1.5px;
+      background: linear-gradient(135deg, #e8a0bf, #d4a574, #e8a0bf, #d4a574);
+      background-size: 300% 300%;
+      animation: borderGlow 6s ease infinite;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    @keyframes borderGlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
     }
 
-    .glass-morphism {
-      background: rgba(255, 255, 255, 0.25);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
+    /* Soft glow behind cards */
+    .card-glow {
+      box-shadow: 0 0 40px rgba(232,160,191,0.1), 0 8px 32px rgba(0,0,0,0.4);
     }
 
-    .glow-effect { box-shadow: 0 0 20px rgba(255, 105, 180, 0.3); }
-
-    .pulse-animation {
-      animation: pulse 2s ease-in-out infinite;
+    /* Pulse */
+    .pulse-soft {
+      animation: pulseSoft 3s ease-in-out infinite;
     }
-
-    @keyframes pulse {
+    @keyframes pulseSoft {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+      50% { transform: scale(1.03); }
     }
 
-    .text-shadow {
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    /* Script font helper */
+    .font-script { font-family: 'Dancing Script', cursive; }
+    .font-vibes { font-family: 'Great Vibes', cursive; }
+
+    /* Text glow */
+    .text-glow {
+      text-shadow: 0 0 20px rgba(232,160,191,0.4);
+    }
+    .text-glow-gold {
+      text-shadow: 0 0 20px rgba(212,165,116,0.3);
     }
 
-    .photo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 1rem;
+    /* Photo hover */
+    .photo-frame {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #1e1720;
+      border: 1px solid rgba(232,160,191,0.15);
+      transition: all 0.4s ease;
+    }
+    .photo-frame:hover {
+      transform: translateY(-4px);
+      border-color: rgba(232,160,191,0.4);
+      box-shadow: 0 8px 24px rgba(232,160,191,0.15);
     }
 
-    .photo-placeholder {
-      aspect-ratio: 1;
-      background: linear-gradient(135deg, #FFE6E6, #FFB6C1);
-      border-radius: 12px;
-      display: flex;
+    /* Countdown digits */
+    .countdown-digit {
+      display: inline-flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      color: rgba(255, 105, 180, 0.7);
-      font-size: 2rem;
-      transition: transform 0.3s ease;
+      min-width: 64px;
     }
-
-    .photo-placeholder:hover {
-      transform: scale(1.05);
+    .countdown-digit .num {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #e8a0bf;
+      line-height: 1;
+    }
+    .countdown-digit .label {
+      font-size: 0.65rem;
+      color: rgba(232,160,191,0.5);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 6px;
+    }
+    .countdown-sep {
+      font-size: 2rem;
+      color: rgba(212,165,116,0.4);
+      margin: 0 2px;
+      align-self: flex-start;
+      padding-top: 4px;
+    }
+    @media (min-width: 768px) {
+      .countdown-digit .num { font-size: 3.5rem; }
+      .countdown-digit { min-width: 80px; }
     }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-pink-100 via-rose-50 to-pink-200 overflow-x-hidden">
+<body class="min-h-screen">
 
-  <!-- Floating hearts -->
-  <div class="floating-hearts">
-    <div class="heart" style="left: 10%; animation-duration: 8s;">💖</div>
-    <div class="heart" style="left: 20%; animation-duration: 6s;">💕</div>
-    <div class="heart" style="left: 30%; animation-duration: 7s;">❤️</div>
-    <div class="heart" style="left: 40%; animation-duration: 9s;">💗</div>
-    <div class="heart" style="left: 50%; animation-duration: 5s;">💝</div>
-    <div class="heart" style="left: 60%; animation-duration: 8s;">💖</div>
-    <div class="heart" style="left: 70%; animation-duration: 6s;">💕</div>
-    <div class="heart" style="left: 80%; animation-duration: 7s;">❤️</div>
-    <div class="heart" style="left: 90%; animation-duration: 9s;">💗</div>
-  </div>
+  <!-- Sparkle particles (generated by JS) -->
+  <div class="sparkles" id="sparkles"></div>
 
   <!-- Main content -->
-  <div class="relative z-10 min-h-screen flex flex-col items-center justify-center p-4 space-y-8 pb-24">
+  <div class="relative z-10 min-h-screen flex flex-col items-center justify-center p-4 md:p-8 space-y-6 pb-24 max-w-3xl mx-auto">
+
+    <!-- Title -->
+    <div class="text-center space-y-2 pt-8">
+      <h1 class="font-vibes text-5xl md:text-7xl text-primary text-glow">Our Love Story</h1>
+      <p class="text-sm tracking-[0.3em] uppercase" style="color: rgba(212,165,116,0.6);">since may 19, 2025</p>
+    </div>
 
     <!-- Clock -->
-    <div class="glass-morphism rounded-3xl p-8 max-w-4xl w-full text-center glow-effect">
-      <div class="space-y-6">
-        <div class="text-6xl md:text-8xl font-bold text-primary text-shadow" id="clock">00:00:00</div>
-        <div class="text-xl md:text-2xl text-gray-700 font-medium" id="date">Loading...</div>
+    <div class="card card-glow w-full p-8 text-center">
+      <div class="space-y-3">
+        <div class="text-5xl md:text-7xl font-bold text-primary text-glow tracking-wider" style="font-variant-numeric: tabular-nums;" id="clock">00:00:00</div>
+        <div class="text-base text-white/40 font-light tracking-wide" id="date">Loading...</div>
       </div>
     </div>
 
     <!-- Monthsary -->
-    <div class="glass-morphism rounded-3xl p-8 max-w-4xl w-full text-center glow-effect">
-      <div class="text-4xl md:text-6xl font-['Dancing_Script'] text-primary text-shadow pulse-animation" id="monthsary-message">
+    <div class="card card-glow w-full p-8 text-center">
+      <div class="font-script text-3xl md:text-5xl text-primary text-glow pulse-soft" id="monthsary-message">
         Happy 1st Monthsary! 💕
       </div>
     </div>
 
     <!-- Days together -->
-    <div class="glass-morphism rounded-3xl p-8 max-w-4xl w-full text-center glow-effect">
-      <div class="space-y-4">
-        <h3 class="text-2xl md:text-3xl font-['Dancing_Script'] text-primary text-shadow">Days Together</h3>
-        <div class="text-5xl md:text-7xl font-bold text-primary pulse-animation" id="days-counter">0</div>
-        <div class="text-lg text-gray-600">Every day with you is a blessing 💖</div>
+    <div class="card card-glow w-full p-8 text-center">
+      <div class="space-y-3">
+        <p class="text-xs tracking-[0.3em] uppercase" style="color: rgba(212,165,116,0.5);">Days Together</p>
+        <div class="text-6xl md:text-8xl font-bold text-primary text-glow pulse-soft" style="font-variant-numeric: tabular-nums;" id="days-counter">0</div>
+        <p class="font-script text-lg" style="color: rgba(232,160,191,0.5);">Every day with you is a blessing</p>
       </div>
     </div>
 
     <!-- Our Memories -->
-    <div class="bg-gradient-to-br from-pink-100 to-pink-200 rounded-3xl p-8 max-w-4xl w-full mx-auto shadow-lg backdrop-blur-md bg-opacity-60 border border-white/30">
+    <div class="card card-glow w-full p-8">
       <div class="space-y-6">
-        <h3 class="text-2xl md:text-3xl font-['Dancing_Script'] text-pink-600 text-center drop-shadow-sm">Our Memories 📸</h3>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 text-center">
-          <div class="bg-pink-200/70 rounded-xl flex items-center justify-center aspect-square overflow-hidden">
-            <img src="a.jpg" alt="Memory A" class="w-full h-full object-cover rounded-lg">
+        <div class="text-center">
+          <p class="text-xs tracking-[0.3em] uppercase" style="color: rgba(212,165,116,0.5);">Our Memories</p>
+        </div>
+        <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+          <div class="photo-frame aspect-square">
+            <img src="a.jpg" alt="Memory A" class="w-full h-full object-cover">
           </div>
-          <div class="bg-pink-200/70 rounded-xl flex items-center justify-center aspect-square overflow-hidden">
-            <img src="b.jpg" alt="Memory B" class="w-full h-full object-cover rounded-lg">
+          <div class="photo-frame aspect-square">
+            <img src="b.jpg" alt="Memory B" class="w-full h-full object-cover">
           </div>
-          <div class="bg-pink-200/70 rounded-xl flex items-center justify-center aspect-square overflow-hidden">
-            <img src="c.jpg" alt="Memory C" class="w-full h-full object-cover rounded-lg">
+          <div class="photo-frame aspect-square">
+            <img src="c.jpg" alt="Memory C" class="w-full h-full object-cover">
           </div>
-          <div class="bg-pink-200/70 rounded-xl flex items-center justify-center aspect-square overflow-hidden">
-            <img src="d.jpg" alt="Memory D" class="w-full h-full object-cover rounded-lg">
+          <div class="photo-frame aspect-square">
+            <img src="d.jpg" alt="Memory D" class="w-full h-full object-cover">
           </div>
-          <div class="bg-pink-200/70 rounded-xl flex items-center justify-center aspect-square overflow-hidden">
-            <img src="e.jpg" alt="Memory E" class="w-full h-full object-cover rounded-lg">
+          <div class="photo-frame aspect-square">
+            <img src="e.jpg" alt="Memory E" class="w-full h-full object-cover">
           </div>
-          <div class="bg-pink-200/70 rounded-xl flex items-center justify-center aspect-square overflow-hidden">
-            <img src="f.jpg" alt="Memory F" class="w-full h-full object-cover rounded-lg">
+          <div class="photo-frame aspect-square">
+            <img src="f.jpg" alt="Memory F" class="w-full h-full object-cover">
           </div>
         </div>
       </div>
     </div>
 
     <!-- Milestone -->
-    <div class="glass-morphism rounded-3xl p-8 max-w-4xl w-full text-center glow-effect">
-      <div class="space-y-4">
-        <h3 class="text-2xl md:text-3xl font-['Dancing_Script'] text-primary text-shadow">Next Milestone</h3>
-        <div class="text-xl md:text-2xl text-gray-700" id="next-milestone">Calculating...</div>
-        <div class="text-3xl md:text-4xl font-bold text-primary" id="countdown">00:00:00:00</div>
-        <div class="text-sm text-gray-500">Days : Hours : Minutes : Seconds</div>
+    <div class="card card-glow w-full p-8 text-center">
+      <div class="space-y-5">
+        <p class="text-xs tracking-[0.3em] uppercase" style="color: rgba(212,165,116,0.5);">Next Milestone</p>
+        <div class="font-script text-2xl md:text-3xl text-primary text-glow" id="next-milestone">Calculating...</div>
+        <div class="flex items-start justify-center" id="countdown-wrap">
+          <div class="countdown-digit"><span class="num" id="cd-days">00</span><span class="label">Days</span></div>
+          <span class="countdown-sep">:</span>
+          <div class="countdown-digit"><span class="num" id="cd-hours">00</span><span class="label">Hours</span></div>
+          <span class="countdown-sep">:</span>
+          <div class="countdown-digit"><span class="num" id="cd-mins">00</span><span class="label">Mins</span></div>
+          <span class="countdown-sep">:</span>
+          <div class="countdown-digit"><span class="num" id="cd-secs">00</span><span class="label">Secs</span></div>
+        </div>
       </div>
     </div>
 
     <!-- Quote -->
-    <div class="glass-morphism rounded-3xl p-6 max-w-4xl w-full text-center glow-effect">
-      <div class="text-lg md:text-xl font-['Dancing_Script'] text-primary text-shadow">
-        "Every love story is beautiful, but ours is my favorite" 💕
-      </div>
+    <div class="card w-full p-6 text-center" style="box-shadow: none;">
+      <p class="font-script text-xl md:text-2xl text-glow" style="color: rgba(232,160,191,0.6);">
+        "Every love story is beautiful, but ours is my favorite"
+      </p>
     </div>
+
   </div>
 
   <!-- Floating Footer -->
-  <footer class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-pink-100/80 backdrop-blur-md px-6 py-2 rounded-full shadow-md text-sm text-pink-700 z-50">
+  <footer class="fixed bottom-4 left-1/2 transform -translate-x-1/2 px-6 py-2 rounded-full text-xs z-50 border" style="background: rgba(22,17,24,0.95); border-color: rgba(232,160,191,0.15); color: rgba(232,160,191,0.4); backdrop-filter: blur(10px);">
     Created with ❤️ by 
-    <a href="https://www.facebook.com/bjroxassablayan/" target="_blank" class="font-semibold underline hover:text-pink-500 transition">
+    <a href="https://www.facebook.com/bjroxassablayan/" target="_blank" class="font-semibold underline hover:text-primary transition">
       Billie
     </a> 
     <span id="year"></span>
   </footer>
+
+  <!-- Generate sparkles -->
+  <script>
+    (function() {
+      const container = document.getElementById('sparkles');
+      for (let i = 0; i < 40; i++) {
+        const s = document.createElement('div');
+        s.className = 'sparkle';
+        s.style.left = Math.random() * 100 + '%';
+        s.style.top = Math.random() * 100 + '%';
+        s.style.setProperty('--dur', (3 + Math.random() * 5) + 's');
+        s.style.setProperty('--delay', (Math.random() * 5) + 's');
+        if (Math.random() > 0.5) s.style.background = '#d4a574';
+        container.appendChild(s);
+      }
+    })();
+  </script>
 
   <!-- JS for time/date -->
   <script>
@@ -218,10 +324,11 @@
   <!-- Relationship milestone logic -->
   <script>
     function updateRelationshipInfo() {
-      const start = new Date("2025-05-19");
+      // Use local midnight so the countdown hits 0 exactly at 12:00 AM
+      const start = new Date(2025, 4, 19); // May 19, 2025 — local midnight
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const diffTime = now - start;
+      const diffTime = today - start;
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
       let months = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
@@ -247,18 +354,26 @@
       document.getElementById('monthsary-message').textContent = message;
       document.getElementById('days-counter').textContent = diffDays;
 
-      const nextMilestone = new Date(start);
-      let nextLabel = "";
+      // Build nextMilestone as local midnight so countdown is accurate
+      let nextMilestone, nextLabel;
+      const nextTotal = months + 1;
 
-      if (months + 1 < 12) {
-        nextMilestone.setMonth(start.getMonth() + (months + 1));
-        if (nextMilestone.getMonth() !== (start.getMonth() + months + 1) % 12) nextMilestone.setDate(0);
-        const nextSuffix = (months + 1) === 1 ? "st" : (months + 1) === 2 ? "nd" : (months + 1) === 3 ? "rd" : "th";
-        nextLabel = `${months + 1}${nextSuffix} Monthsary`;
+      if (nextTotal % 12 !== 0) {
+        // Next is a monthsary (or past-year monthly milestone)
+        let tMonth = start.getMonth() + nextTotal;
+        let tYear = start.getFullYear() + Math.floor(tMonth / 12);
+        tMonth = tMonth % 12;
+        // Handle month-end overflow (e.g. Jan 31 + 1 month → Feb 28)
+        const tDay = new Date(tYear, tMonth + 1, 0).getDate();
+        nextMilestone = new Date(tYear, tMonth, Math.min(start.getDate(), tDay));
+        const nextSuffix = nextTotal === 1 ? "st" : nextTotal === 2 ? "nd" : nextTotal === 3 ? "rd" : "th";
+        nextLabel = `${nextTotal}${nextSuffix} Monthsary`;
       } else {
-        nextMilestone.setFullYear(start.getFullYear() + (years + 1));
-        const nextSuffix = (years + 1) === 1 ? "st" : (years + 1) === 2 ? "nd" : (years + 1) === 3 ? "rd" : "th";
-        nextLabel = `${years + 1}${nextSuffix} Anniversary`;
+        // Next is an anniversary
+        const nextAnniv = nextTotal / 12;
+        nextMilestone = new Date(start.getFullYear() + nextAnniv, start.getMonth(), start.getDate());
+        const nextSuffix = nextAnniv === 1 ? "st" : nextAnniv === 2 ? "nd" : nextAnniv === 3 ? "rd" : "th";
+        nextLabel = `${nextAnniv}${nextSuffix} Anniversary`;
       }
 
       document.getElementById('next-milestone').textContent = nextLabel;
@@ -270,8 +385,10 @@
         const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
-        document.getElementById('countdown').textContent =
-          `${String(days).padStart(2, '0')}:${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
+        document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('cd-mins').textContent = String(minutes).padStart(2, '0');
+        document.getElementById('cd-secs').textContent = String(seconds).padStart(2, '0');
       }
     }
     setInterval(updateRelationshipInfo, 1000);
