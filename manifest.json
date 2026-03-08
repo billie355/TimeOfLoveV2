@@ -1,0 +1,16 @@
+{
+  "name": "Our Love Story",
+  "short_name": "TimeOfLove",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#161118",
+  "theme_color": "#e8a0bf",
+  "icons": [
+    {
+      "src": "TofL.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
